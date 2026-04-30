@@ -80,5 +80,21 @@ def check_if_possible():
     #quant = len(reached)
     return reached
 
+def check_output_distribution():
+    a = int(input('Enter 1st number: '))
+    b = int(input('Enter 2nd number: '))
+    c = int(input('Enter 3rd number: '))
+    d = int(input('Enter 4th number: '))
+    e = int(input('Enter 5th number: '))
+    
+    hands = ordered_subsets([a,b,c,d,e])
+    outputted_states = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    for k in range(len(hands)):
+        outputted_states[apply_combo(hands[k], 0)] +=1
+        
+    #quant = len(reached)
+    return outputted_states
+
+#print(check_output_distribution())
 print(check_if_possible())
-#print(quant)2
+#print(quant)
