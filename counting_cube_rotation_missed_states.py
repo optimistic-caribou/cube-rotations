@@ -20,6 +20,12 @@ def k_subsets(elements,k):
         result.append(c)
     return result
 
+def apply_combo(combo_of_cards, starting_state):
+    state = starting_state
+    for k in range(len(combo_of_cards)):
+        state = perm[combo_of_cards[k]][state]
+    return state
+
 perm = [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
         [1,2,3,0,13,14,15,12,5,6,7,4,17,18,19,16,9,10,11,8,23,20,21,22],
         [2, 3, 0, 1, 18, 19, 16, 17, 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 22, 23, 20, 21],
@@ -46,38 +52,22 @@ perm = [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
         [23, 20, 21, 22, 9, 10, 11, 8, 7, 4, 5, 6, 19, 16, 17, 18, 13, 14, 15, 12, 1, 2, 3, 0]]
 
 def numReached(sampledCardsList):
-    tries = ordered_subsets(sampledCardsList)
+    hands = ordered_subsets(sampledCardsList)
     reached = {0}
-    for k in range(len(tries)): #tries[k] is a tuple that lists the functions
-        combo = tries[k]
-        #if len(combo)==7:
-        #    reached.add(perm[combo[6]][ perm[combo[5]][perm[combo[4]][perm[combo[3]][perm[combo[2]][perm[combo[1]][perm[combo[0]][0]]]]]] ])
-        #elif len(combo)==6:
-        #        reached.add(perm[combo[5]][ perm[combo[4]][perm[combo[3]][perm[combo[2]][perm[combo[1]][perm[combo[0]][0]]]]] ])
-        if len(combo)==5:
-            reached.add(perm[combo[4]][perm[combo[3]][perm[combo[2]][  perm[combo[1]][perm[combo[0]][0]]  ]]])
-            if len(reached)==24:
-                states_reached_frequency[len(reached)-1] += 1
-                return(24)
-        elif len(combo)==4:
-            reached.add(perm[combo[3]][perm[combo[2]][  perm[combo[1]][perm[combo[0]][0]]  ]])
-            if len(reached)==24:
-                states_reached_frequency[len(reached)-1] += 1
-                return(24)
-        elif len(combo)==3:
-            reached.add(perm[combo[2]][  perm[combo[1]][perm[combo[0]][0]]  ])
-        elif len(combo)==2:
-            reached.add(perm[combo[1]][  perm[combo[0]][0]  ])
-        elif len(combo)==1:
-            reached.add(perm[combo[0]][0])
-        
+    
+    for k in range(len(hands)): #hands[k] is a tuple that gives a hand
+        reached.add(apply_combo(hands[k],0))
+        if len(reached) == 24:
+            states_reached_frequency[len(reached)-1] += 1
+            return 24   
+    
     states_reached_frequency[len(reached)-1] += 1    
     return(len(reached))
         
 
-numOfCardsInHand = 5 #max of 7 right now
+numOfCardsInHand = 5 #any size should work
 deck_size = 46
-shift = 2
+#shift = 2
 fail = 0
 easy_rots = [1,2,3,4,8,12,16,20,22,1,2,3,4,8,12,16,20,22]
 states_reached_frequency = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -99,10 +89,10 @@ print(percentFail)
 range(shift,deck_size+shift)
 '''
 
-for q in k_subsets(range(shift,deck_size+shift),numOfCardsInHand):
+for q in k_subsets(range(1,deck_size + 1),numOfCardsInHand):
     rots = []
     for i in range(numOfCardsInHand):
-        rots.append(q[i]//2)
+        rots.append(q[i]%23 + 1)
     fail = fail + 24 - numReached(rots)
 percentFail = fail/(23*comb(deck_size,numOfCardsInHand))
 
